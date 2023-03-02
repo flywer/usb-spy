@@ -1,6 +1,11 @@
 import {join} from 'path'
 import {BrowserWindow, app} from 'electron'
-import {log} from "electron-log";
+import ElectronLog, {log} from "electron-log";
+import usbDetect from "usb-detection";
+import si from "systeminformation";
+import {trim} from "lodash-es";
+import {stringToMapByKey} from "@main/stringUtils";
+import parseJson from 'parse-json';
 
 const isDev = !app.isPackaged
 
@@ -24,13 +29,21 @@ export async function createWindow() {
         : `file://${join(app.getAppPath(), 'dist/render/index.html')}`
 
     win.loadURL(URL).then(() => {
-        let ffi = require('ffi-napi')
+        const usbDetect = require('usb-detection');
 
-        let libfactorial = ffi.Library('libfactorial', {
-            'factorial': ['uint', ['int']]
+        usbDetect.startMonitoring();
+
+        const si = require("systeminformation")
+        usbDetect.on('add', function (device) {
+            ElectronLog.info('add', device);
+            win.webContents.send('usb-add',device)
+            //si.usb().then(data => ElectronLog.info(data));
         });
-
-        log('Your output: ' + libfactorial.factorial(10));
+        usbDetect.on('remove', function (device) {
+            ElectronLog.info('remove', device);
+            win.webContents.send('usb-remove',device)
+            //si.usb().then(data => ElectronLog.info(data));
+        });
     })
 
     if (isDev)
@@ -44,6 +57,10 @@ export async function createWindow() {
     })
 
     return win
+}
+
+const spy = () => {
+
 }
 
 export async function restoreOrCreateWindow() {

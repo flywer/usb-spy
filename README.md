@@ -1,18 +1,15 @@
-# Electron-Template
+# usb-spy
 
-⚡Vite + Electron Template
+⚡监听USB接口，设置USB白名单，弹出USB设备，区分USB设备类型
 
 ## How to use
 
 ```bash
 # install dependencies
-npm install # yarn
-
-# run in developer mode
-npm run dev # yarn dev
+npm install
 
 # build
-npm run build # yarn build
+rebuild #electron-rebuild
 
 # fix
 # When "Electron failed to install correctly, please delete node_modules/electron and try installing again" error occurs 

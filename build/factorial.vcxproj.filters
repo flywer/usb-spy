@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\c">
+      <UniqueIdentifier>{CAE7F8DA-E845-16F7-E8EA-8DBDBBC6BC28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="E:">
+      <UniqueIdentifier>{5B7DBE12-B2C6-AFA4-ACF8-17495B3FA076}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="E:\IdeaProjects">
+      <UniqueIdentifier>{9A307FE0-61CE-25B9-71CA-CBE64FECD3C2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="E:\IdeaProjects\usb-spy">
+      <UniqueIdentifier>{0B9E55AB-C45C-D9D1-B11B-8C39F00DAC32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="E:\IdeaProjects\usb-spy\node_modules">
+      <UniqueIdentifier>{56DF7A98-063D-FB9D-485C-089023B4C16A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="E:\IdeaProjects\usb-spy\node_modules\node-gyp">
+      <UniqueIdentifier>{77348C0E-2034-7791-74D5-63C077DF5A3B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="E:\IdeaProjects\usb-spy\node_modules\node-gyp\src">
+      <UniqueIdentifier>{8CDEE807-BC53-E450-C8B8-4DEBB66742D4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..">
+      <UniqueIdentifier>{739DB09A-CC57-A953-A6CF-F64FA08E4FA7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\c\factorial.c">
+      <Filter>..\c</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\IdeaProjects\usb-spy\node_modules\node-gyp\src\win_delay_load_hook.cc">
+      <Filter>E:\IdeaProjects\usb-spy\node_modules\node-gyp\src</Filter>
+    </ClCompile>
+    <None Include="..\binding.gyp">
+      <Filter>..</Filter>
+    </None>
+  </ItemGroup>
+</Project>

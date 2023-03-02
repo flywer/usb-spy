@@ -1,7 +1,7 @@
 {
-  "name": "electron-project-template",
+  "name": "usb-spy",
   "version": "0.1.0",
-  "description": "A template used by the electron framework",
+  "description": "监听USB接口，设置USB白名单，弹出USB设备，区分USB设备类型",
   "main": "dist/main/index.js",
   "scripts": {
     "dev": "chcp 65001 && rimraf dist && vite",
@@ -26,9 +26,12 @@
     "jsonfile": "^6.1.0",
     "lodash-es": "^4.17.21",
     "moment": "^2.29.4",
+    "node-powershell-updates": "^4.0.1",
     "ref-array-napi": "^1.2.1",
     "ref-napi": "^3.0.1",
     "ref-struct-napi": "^1.1.1",
+    "systeminformation": "^5.17.9",
+    "usb-detection": "^4.14.1",
     "vue": "^3.2.38"
   },
   "devDependencies": {
