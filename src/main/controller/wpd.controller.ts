@@ -11,7 +11,7 @@ export class WpdController {
 
     @IpcHandle(channels.wpd.stop)
     public async stopWpdService() {
-        return await this.wpdService.stopWpdService()
+        return await this.wpdService.disableWpdPolicy()
     }
 
     @IpcHandle(channels.wpd.start)
@@ -22,5 +22,16 @@ export class WpdController {
     @IpcHandle(channels.wpd.policy.setup)
     public async wpdPolicySetup() {
         return await this.wpdService.wpdPolicySetup()
+    }
+
+    @IpcHandle(channels.wpd.policy.check)
+    public async checkWpdPolicyPath() {
+        return await this.wpdService.checkWpdPolicyPath()
+    }
+
+    @IpcHandle(channels.wpd.policy.create)
+    public async createWpdPolicyPath() {
+        let {policyPath, enablePolicyPath} = await this.wpdService.checkWpdPolicyPath();
+        return await this.wpdService.createWpdPolicyPath(policyPath, enablePolicyPath)
     }
 }

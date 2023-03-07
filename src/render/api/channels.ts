@@ -11,7 +11,9 @@ export const channels = reactive({
         stop: 'wpd/stop',
         start: 'wpd/start',
         policy: {
-            setup: 'wpd/policy/setup'
+            setup: 'wpd/policy/setup',
+            check: "wpd/policy/check",
+            create: "wpd/policy/create"
         }
     }
 })

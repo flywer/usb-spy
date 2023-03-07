@@ -3,7 +3,13 @@ import {sendMsgToMainProcess} from '@render/api'
 import {useIpc} from '@render/plugins/ipc'
 import {ref} from 'vue'
 import {disable_usb, enable_usb, get_usb_status} from "@render/api/usb.api";
-import {start_wpd_service, stop_wpd_service, wpd_policy_setup} from "@render/api/wpd.api";
+import {
+  check_wpd_policy_path,
+  create_wpd_policy_path,
+  start_wpd_service,
+  stop_wpd_service,
+  wpd_policy_setup
+} from "@render/api/wpd.api";
 
 const props = defineProps({
   title: {
@@ -51,6 +57,14 @@ const startWpdService = async () => {
 
 const wpdPolicySetup = async () => {
   const {data} = await wpd_policy_setup()
+  log.value += `[main]: ${data.result}  \n`
+}
+const checkWpdPolicyPath = async () => {
+  const {data} = await check_wpd_policy_path()
+  log.value += `[main]: ${JSON.stringify(data)}  \n`
+}
+const createWpdPolicyPath = async () => {
+  const {data} = await create_wpd_policy_path()
   log.value += `[main]: ${JSON.stringify(data)}  \n`
 }
 
@@ -91,7 +105,12 @@ ipc.on('usb-remove', (msg) => {
 
       <button style="margin-left: 20px" @click="enableUsb">启用USB</button>
     </div>
-    <div  style="margin-top: 20px">
+    <div style="margin-top: 20px">
+
+      <button style="margin-left: 20px" @click="checkWpdPolicyPath">检查WPD设备策略路径</button>
+
+      <button style="margin-left: 20px" @click="createWpdPolicyPath">创建WPD设备策略</button>
+
       <button style="margin-left: 20px" @click="wpdPolicySetup">获取WPD设备策略状态</button>
 
       <button style="margin-left: 20px" @click="stopWpdService">禁用WPD服务</button>
