@@ -7,7 +7,8 @@ import {registryTxtToJson, removeLineBreaks} from "@main/stringUtils";
 @Injectable()
 export class WpdService {
 
-    private readonly RemovableStorageDevices = 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\RemovableStorageDevices'
+    private readonly POLICY_PATH = '\'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\RemovableStorageDevices\''
+    private readonly POLICY_SETUP_PATH = '\'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\RemovableStorageDevices\\{6AC27878-A6FA-4155-BA85-F98F491D4F33}\''
 
     /**
      * @description: 获取WPD设备策略
@@ -18,17 +19,17 @@ export class WpdService {
         let res: any = {};
 
         ps.addCommand('Start-Process powershell -Verb RunAs -WindowStyle Hidden');
-        ps.addCommand(`Test-Path ${this.RemovableStorageDevices}`)
+        ps.addCommand(`Test-Path ${this.POLICY_PATH}`)
 
         await ps.invoke()
             .then(async output => {
                 if (isEqual(removeLineBreaks(output), 'True')) {
                     //应用层WPD设备禁用以及只读策略
-                    ps.addCommand('Test-Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\RemovableStorageDevices\\{6AC27878-A6FA-4155-BA85-F98F491D4F33}"')
+                    ps.addCommand(`Test-Path ${this.POLICY_SETUP_PATH}`)
                     await ps.invoke()
                         .then(async output => {
                                 if (isEqual(removeLineBreaks(output), 'True')) {
-                                    ps.addCommand('Get-ItemProperty "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\RemovableStorageDevices\\{6AC27878-A6FA-4155-BA85-F98F491D4F33}"')
+                                    ps.addCommand(`Get-ItemProperty ${this.POLICY_SETUP_PATH}`)
                                     await ps.invoke()
                                         .then(output => {
                                             let json = registryTxtToJson(output);
@@ -38,7 +39,7 @@ export class WpdService {
                                             ElectronLog.error(err);
                                         })
                                 } else {
-                                    ps.addCommand('New-Item -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\RemovableStorageDevices\\{6AC27878-A6FA-4155-BA85-F98F491D4F33}"')
+                                    ps.addCommand(`New-Item -Path ${this.POLICY_SETUP_PATH}`)
                                 }
                             }
                         )
@@ -46,7 +47,7 @@ export class WpdService {
                             ElectronLog.error(err);
                         })
                 } else {
-                    ps.addCommand('New-Item -Path "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\RemovableStorageDevices"')
+                    ps.addCommand(`New-Item -Path ${this.POLICY_PATH}`)
                 }
             }).catch(err => {
                 ElectronLog.error(err);
