@@ -1,11 +1,7 @@
 import {join} from 'path'
 import {BrowserWindow, app} from 'electron'
-import ElectronLog, {log} from "electron-log";
-import usbDetect from "usb-detection";
-import si from "systeminformation";
-import {trim} from "lodash-es";
-import {stringToMapByKey} from "@main/stringUtils";
-import parseJson from 'parse-json';
+import ElectronLog from "electron-log";
+import {ps} from "@main/powershell";
 
 const isDev = !app.isPackaged
 
@@ -36,13 +32,13 @@ export async function createWindow() {
         const si = require("systeminformation")
         usbDetect.on('add', function (device) {
             ElectronLog.info('add', device);
-            win.webContents.send('usb-add',device)
-            //si.usb().then(data => ElectronLog.info(data));
+            win.webContents.send('usb-add', device)
+            si.usb().then(data => ElectronLog.info(data));
         });
         usbDetect.on('remove', function (device) {
             ElectronLog.info('remove', device);
-            win.webContents.send('usb-remove',device)
-            //si.usb().then(data => ElectronLog.info(data));
+            win.webContents.send('usb-remove', device)
+            si.usb().then(data => ElectronLog.info(data));
         });
     })
 
@@ -54,6 +50,7 @@ export async function createWindow() {
 
     win.on('closed', () => {
         win.destroy()
+        ps.dispose()
     })
 
     return win

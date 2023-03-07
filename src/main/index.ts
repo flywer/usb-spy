@@ -3,7 +3,9 @@ import {createEinf} from 'einf'
 import {AppController} from './app.controller'
 import {createWindow} from './main.window'
 import {log} from "electron-log";
-import {DeviceControlController} from "@main/controller/deviceControl.controller";
+import {UsbController} from "@main/controller/usb.controller";
+import {WpdController} from "@main/controller/wpd.controller";
+import {ps} from "@main/powershell";
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
 
@@ -17,12 +19,15 @@ async function electronAppInit() {
     if (isDev) {
         if (process.platform === 'win32') {
             process.on('message', (data) => {
-                if (data === 'graceful-exit')
+                if (data === 'graceful-exit') {
                     app.exit()
+                    ps.dispose()
+                }
             })
         } else {
             process.on('SIGTERM', () => {
                 app.exit()
+                ps.dispose()
             })
         }
     }
@@ -34,7 +39,7 @@ async function bootstrap() {
 
         await createEinf({
             window: createWindow,
-            controllers: [AppController,DeviceControlController],
+            controllers: [AppController, UsbController, WpdController],
             injects: [{
                 name: 'IS_DEV',
                 inject: !app.isPackaged,
@@ -44,6 +49,7 @@ async function bootstrap() {
     } catch (error) {
         console.error(error)
         app.quit()
+        ps.dispose()
     }
 }
 

@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import {disableUsb, enableUsb, getUsbInfo1, sendMsgToMainProcess} from '@render/api'
+import {sendMsgToMainProcess} from '@render/api'
 import {useIpc} from '@render/plugins/ipc'
 import {ref} from 'vue'
+import {disable_usb, enable_usb, get_usb_status} from "@render/api/usb.api";
+import {start_wpd_service, stop_wpd_service, wpd_policy_setup} from "@render/api/wpd.api";
 
 const props = defineProps({
   title: {
@@ -23,22 +25,37 @@ const sendMsg = async () => {
   }
 }
 
-const bannedUsb = async () => {
-  const {data} = await disableUsb()
-  log.value += `[main]: ${data}  \n`
-}
-const enableUsb1 = async () => {
-  const {data} = await enableUsb()
+const getUsbStatus = async () => {
+  const {data} = await get_usb_status()
   log.value += `[main]: ${data}  \n`
 }
 
-const getUsbInfo = async () => {
-  const {data} = await getUsbInfo1()
+const disableUsb = async () => {
+  const {data} = await disable_usb()
   log.value += `[main]: ${data}  \n`
+}
+const enableUsb = async () => {
+  const {data} = await enable_usb()
+  log.value += `[main]: ${data}  \n`
+}
+
+const stopWpdService = async () => {
+  const {data} = await stop_wpd_service()
+  log.value += `[main]: ${data}  \n`
+}
+
+const startWpdService = async () => {
+  const {data} = await start_wpd_service()
+  log.value += `[main]: ${data}  \n`
+}
+
+const wpdPolicySetup = async () => {
+  const {data} = await wpd_policy_setup()
+  log.value += `[main]: ${JSON.stringify(data)}  \n`
 }
 
 const clear = () => {
-   log.value =''
+  log.value = ''
 }
 
 const ipc = useIpc()
@@ -68,11 +85,18 @@ ipc.on('usb-remove', (msg) => {
     </button>
     <button style="margin-left: 20px" @click="clear">清空</button>
     <div style="margin-top: 20px">
-      <button style="margin-left: 20px" @click="getUsbInfo">获取USB设备状态</button>
+      <button style="margin-left: 20px" @click="getUsbStatus">获取USB设备状态</button>
 
-      <button style="margin-left: 20px" @click="bannedUsb">禁用USB</button>
+      <button style="margin-left: 20px" @click="disableUsb">禁用USB</button>
 
-      <button style="margin-left: 20px" @click="enableUsb1">启用USB</button>
+      <button style="margin-left: 20px" @click="enableUsb">启用USB</button>
+    </div>
+    <div  style="margin-top: 20px">
+      <button style="margin-left: 20px" @click="wpdPolicySetup">获取WPD设备策略状态</button>
+
+      <button style="margin-left: 20px" @click="stopWpdService">禁用WPD服务</button>
+
+      <button style="margin-left: 20px" @click="startWpdService">开启WPD服务</button>
     </div>
 
   </div>
