@@ -1,12 +1,12 @@
 import {Injectable} from 'einf'
 import ElectronLog from "electron-log";
 import {registryTxtToJson} from "@main/stringUtils";
-import {ps} from "@main/powershell";
+import {ADMIN_START, ps} from "@main/powershell";
 import {isEqual} from "lodash";
 
 @Injectable()
 export class UsbService {
-    private readonly USB_STOR = '\'HKLM:\\SYSTEM\\CurrentControlSet\\services\\USBSTOR\''
+    private readonly USB_STOR = ' \'HKLM:\\SYSTEM\\CurrentControlSet\\services\\USBSTOR\' '
 
     /**
      * 获取USB移动存储设备状态
@@ -28,7 +28,7 @@ export class UsbService {
     public async enableUsb() {
         let res = '启用失败';
 
-        ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-ItemProperty ${this.USB_STOR} -name start -Value 3" `);
+        ps.addCommand(`${ADMIN_START} "Set-ItemProperty ${this.USB_STOR} -name start -Value 3" `);
         await ps.invoke()
             .then(() => {
                 res = '启用成功';
@@ -43,7 +43,7 @@ export class UsbService {
     public async disableUsb() {
         let res = '禁用失败';
 
-        ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-ItemProperty ${this.USB_STOR} -name start -Value 4" `);
+        ps.addCommand(`${ADMIN_START} "Set-ItemProperty ${this.USB_STOR} -name start -Value 4" `);
         await ps.invoke()
             .then(() => {
                 res = '禁用成功';

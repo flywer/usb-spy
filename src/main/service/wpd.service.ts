@@ -1,5 +1,5 @@
 import {Injectable} from "einf";
-import {ps} from "@main/powershell";
+import {ADMIN_START, ps} from "@main/powershell";
 import ElectronLog from "electron-log";
 import {isEqual} from 'lodash'
 import {registryTxtToJson, removeLineBreaks} from "@main/stringUtils";
@@ -73,7 +73,7 @@ export class WpdService {
                 .then(async output => {
                     //若没有此项则新增
                     if (!isEqual(removeLineBreaks(output), 'True')) {
-                        ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "New-Item -ItemType Directory ${this.POLICY_PATH}" `)
+                        ps.addCommand(`${ADMIN_START} "New-Item -ItemType Directory ${this.POLICY_PATH}" `)
                         await ps.invoke()
                     }
                 }).catch(err => {
@@ -82,14 +82,14 @@ export class WpdService {
         }
 
         if (!policyPath) {
-            ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "New-Item -ItemType Directory ${this.POLICY_SETUP_PATH}" `)
-            ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "New-ItemProperty -Path ${this.POLICY_SETUP_PATH} -Name \'Deny_Read\' -Value 1 -PropertyType DWORD" `)
-            ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "New-ItemProperty -Path ${this.POLICY_SETUP_PATH} -Name \'Deny_Write\' -Value 1 -PropertyType DWORD" `)
+            ps.addCommand(`${ADMIN_START} "New-Item -ItemType Directory ${this.POLICY_SETUP_PATH}" `)
+            ps.addCommand(`${ADMIN_START} "New-ItemProperty -Path ${this.POLICY_SETUP_PATH} -Name \'Deny_Read\' -Value 1 -PropertyType DWORD" `)
+            ps.addCommand(`${ADMIN_START} "New-ItemProperty -Path ${this.POLICY_SETUP_PATH} -Name \'Deny_Write\' -Value 1 -PropertyType DWORD" `)
         }
         if (!enablePolicyPath) {
-            ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "New-Item -ItemType Directory ${this.ENABLE_POLICY_PATH}" `)
-            ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "New-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Read\' -Value 0 -PropertyType DWORD" `)
-            ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "New-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Write\' -Value 0 -PropertyType DWORD" `)
+            ps.addCommand(`${ADMIN_START} "New-Item -ItemType Directory ${this.ENABLE_POLICY_PATH}" `)
+            ps.addCommand(`${ADMIN_START} "New-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Read\' -Value 0 -PropertyType DWORD" `)
+            ps.addCommand(`${ADMIN_START} "New-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Write\' -Value 0 -PropertyType DWORD" `)
         }
 
         if (!policyPath || !enablePolicyPath) {
@@ -176,7 +176,7 @@ export class WpdService {
         let res: any = {};
         const {policySetupPath} = await this.checkWpdPolicyPath()
         if (policySetupPath) {
-            ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-ItemProperty -Path ${this.POLICY_SETUP_PATH} -Name \'Deny_Read\' -Value ${denyRead} " `)
+            ps.addCommand(`${ADMIN_START} "Set-ItemProperty -Path ${this.POLICY_SETUP_PATH} -Name \'Deny_Read\' -Value ${denyRead} " `)
             await ps.invoke()
                 .catch(err => {
                     ElectronLog.error(err);
@@ -197,7 +197,7 @@ export class WpdService {
         let res: any = {};
         const {policySetupPath} = await this.checkWpdPolicyPath()
         if (policySetupPath) {
-            ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-ItemProperty -Path ${this.POLICY_SETUP_PATH} -Name \'Deny_Write\' -Value ${denyWrite} " `)
+            ps.addCommand(`${ADMIN_START} "Set-ItemProperty -Path ${this.POLICY_SETUP_PATH} -Name \'Deny_Write\' -Value ${denyWrite} " `)
             await ps.invoke()
                 .catch(err => {
                     ElectronLog.error(err);
@@ -218,8 +218,8 @@ export class WpdService {
         let res: any = {};
         const {enablePolicyPath} = await this.checkWpdPolicyPath()
         if (enablePolicyPath) {
-            console.log(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Read\' -Value ${enable} " `)
-            ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Read\' -Value ${enable} " `)
+            console.log(`${ADMIN_START} "Set-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Read\' -Value ${enable} " `)
+            ps.addCommand(`${ADMIN_START} "Set-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Read\' -Value ${enable} " `)
             await ps.invoke()
                 .catch(err => {
                     ElectronLog.error(err);
@@ -244,7 +244,7 @@ export class WpdService {
         let res: any = {};
         const {enablePolicyPath} = await this.checkWpdPolicyPath()
         if (enablePolicyPath) {
-            ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Write\' -Value ${enable} " `)
+            ps.addCommand(`${ADMIN_START} "Set-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Write\' -Value ${enable} " `)
             await ps.invoke()
                 .catch(err => {
                     ElectronLog.error(err);
