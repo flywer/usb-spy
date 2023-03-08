@@ -6,9 +6,8 @@ import {disable_usb, enable_usb, get_usb_status} from "@render/api/usb.api";
 import {
   check_wpd_policy_path,
   create_wpd_policy_path,
-  start_wpd_service,
-  stop_wpd_service, wpd_policy_enable,
-  wpd_policy_setup
+  wpd_policy_enable,
+  wpd_policy_setup, wpd_read_policy_enabled, wpd_set_deny_read, wpd_set_deny_write, wpd_write_policy_enabled
 } from "@render/api/wpd.api";
 
 const props = defineProps({
@@ -45,16 +44,6 @@ const enableUsb = async () => {
   log.value += `[main]: ${data}  \n`
 }
 
-const stopWpdService = async () => {
-  const {data} = await stop_wpd_service()
-  log.value += `[main]: ${data}  \n`
-}
-
-const startWpdService = async () => {
-  const {data} = await start_wpd_service()
-  log.value += `[main]: ${data}  \n`
-}
-
 const wpdPolicySetup = async () => {
   const {data} = await wpd_policy_setup()
   log.value += `[main]: ${data.result}  \n`
@@ -71,6 +60,23 @@ const wpdPolicySetupEnable = async () => {
   const {data} = await wpd_policy_enable()
   log.value += `[main]: ${data.result}  \n`
 }
+const wpdSetDenyRead = async (denyRead: 1 | 0) => {
+  const {data} = await wpd_set_deny_read(denyRead)
+  log.value += `[main]: ${data.result}  \n`
+}
+const wpdSetDenyWrite = async (denyWrite: 1 | 0) => {
+  const {data} = await wpd_set_deny_write(denyWrite)
+  log.value += `[main]: ${data.result}  \n`
+}
+const wpdReadPolicyEnabled = async (enable: 1 | 0) => {
+  const {data} = await wpd_read_policy_enabled(enable)
+  log.value += `[main]: ${data.result}  \n`
+}
+const wpdWritePolicyEnabled = async (enable: 1 | 0) => {
+  const {data} = await wpd_write_policy_enabled(enable)
+  log.value += `[main]: ${data.result}  \n`
+}
+
 
 const clear = () => {
   log.value = ''
@@ -120,11 +126,17 @@ ipc.on('usb-remove', (msg) => {
       <button style="margin-left: 20px" @click="wpdPolicySetupEnable">获取WPD设备策略启用状态</button>
     </div>
     <div style="margin-top: 20px">
-      <button style="margin-left: 20px" @click="stopWpdService">禁用WPD服务</button>
-
-      <button style="margin-left: 20px" @click="startWpdService">开启WPD服务</button>
+      <button style="margin-left: 20px" @click="wpdSetDenyRead(0)">WPD设备可读</button>
+      <button style="margin-left: 20px" @click="wpdSetDenyRead(1)">WPD设备不可读</button>
+      <button style="margin-left: 20px" @click="wpdSetDenyWrite(0)">WPD设备可写</button>
+      <button style="margin-left: 20px" @click="wpdSetDenyWrite(1)">WPD设备不可写</button>
     </div>
-
+    <div style="margin-top: 20px">
+      <button style="margin-left: 20px" @click="wpdReadPolicyEnabled(1)">启用WPD设备读策略</button>
+      <button style="margin-left: 20px" @click="wpdReadPolicyEnabled(0)">禁用WPD设备读策略</button>
+      <button style="margin-left: 20px" @click="wpdWritePolicyEnabled(1)">启用WPD设备读策略</button>
+      <button style="margin-left: 20px" @click="wpdWritePolicyEnabled(0)">禁用WPD设备读策略</button>
+    </div>
   </div>
 </template>
 

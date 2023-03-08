@@ -9,16 +9,6 @@ export class WpdController {
     ) {
     }
 
-    @IpcHandle(channels.wpd.stop)
-    public async stopWpdService() {
-        return await this.wpdService.disableWpdPolicy()
-    }
-
-    @IpcHandle(channels.wpd.start)
-    public async startWpdService() {
-        return await this.wpdService.startWpdService()
-    }
-
     @IpcHandle(channels.wpd.policy.setup)
     public async wpdPolicySetup() {
         return await this.wpdService.wpdPolicySetup()
@@ -39,4 +29,25 @@ export class WpdController {
     public async wpdPolicySetupEnable() {
         return await this.wpdService.wpdPolicySetupEnable()
     }
+
+    @IpcHandle(channels.wpd.policy.setDenyRead)
+    public async setDenyRead(denyRead: number) {
+        return await this.wpdService.setDenyRead(denyRead)
+    }
+
+    @IpcHandle(channels.wpd.policy.setDenyWrite)
+    public async setDenyWrite(denyWrite: number) {
+        return await this.wpdService.setDenyWrite(denyWrite)
+    }
+
+    @IpcHandle(channels.wpd.policy.readPolicyEnabled)
+    public async wpdReadPolicyEnabled(enable: number) {
+        return await this.wpdService.wpdReadPolicyEnabled(enable)
+    }
+
+    @IpcHandle(channels.wpd.policy.writePolicyEnabled)
+    public async wpdWritePolicyEnabled(enable: number) {
+        return await this.wpdService.wpdWritePolicyEnabled(enable)
+    }
+
 }

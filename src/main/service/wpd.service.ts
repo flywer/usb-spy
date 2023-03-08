@@ -190,51 +190,95 @@ export class WpdService {
     }
 
     /**
-     * @description: 禁用WPD设备读写策略
+     * @description:  设置WPD设备读策略
      * @author: wangcb
-     * @date: 2023/3/7 16:51
+     * @date: 2023/3/8 10:02
      **/
-    public async disableWpdPolicy(denyRead?: boolean, denyWrite?: boolean) {
-        try {
-
-            // 加载DeviceManagement模块和获取wpd服务信息
-            await ps.addCommand('Import-Module -Name "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\Modules\\DeviceManagement\\DeviceManagement.psd1"');
-            await ps.addCommand('$service = Get-Service -Name "WpdBusEnum"');
-
-            // 停止wpd服务
-            const stopCmd = '$service.Stop()';
-            await ps.addCommand(stopCmd);
-            await ps.invoke();
-            await ps.dispose();
-
-            console.log('已停止 WpdBusEnum 服务');
-            return '已停止 WpdBusEnum 服务'
-        } catch (err) {
-            console.error(`出现错误：${err}`);
-            return `出现错误：${err}`
+    public async setDenyRead(denyRead: number) {
+        let res: any = {};
+        const {policySetupPath} = await this.checkWpdPolicyPath()
+        if (policySetupPath) {
+            ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-ItemProperty -Path ${this.POLICY_SETUP_PATH} -Name \'Deny_Read\' -Value ${denyRead} " `)
+            await ps.invoke()
+                .catch(err => {
+                    ElectronLog.error(err);
+                })
+            res['result'] = 'wpd设备读策略设置完成'
+        } else {
+            res['result'] = 'wpd策略路径不存在'
         }
+        return res;
     }
 
-    public async startWpdService() {
-        try {
-
-            // 加载DeviceManagement模块和获取wpd服务信息
-            await ps.addCommand('Import-Module -Name "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\Modules\\DeviceManagement\\DeviceManagement.psd1"');
-            await ps.addCommand('$service = Get-Service -Name "WpdBusEnum"');
-
-            // 启动wpd服务
-            const startCmd = '$service.Start()';
-            await ps.addCommand(startCmd);
-            await ps.invoke();
-            await ps.dispose();
-
-            console.log('已启动 WpdBusEnum 服务');
-            return '已启动 WpdBusEnum 服务'
-        } catch (err) {
-            console.error(`出现错误：${err}`);
-            return `出现错误：${err}`
+    /**
+     * @description: 设置WPD设备写策略
+     * @author: wangcb
+     * @date: 2023/3/8 10:51
+     **/
+    public async setDenyWrite(denyWrite: number) {
+        let res: any = {};
+        const {policySetupPath} = await this.checkWpdPolicyPath()
+        if (policySetupPath) {
+            ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-ItemProperty -Path ${this.POLICY_SETUP_PATH} -Name \'Deny_Write\' -Value ${denyWrite} " `)
+            await ps.invoke()
+                .catch(err => {
+                    ElectronLog.error(err);
+                })
+            res['result'] = 'wpd设备写策略设置完成'
+        } else {
+            res['result'] = 'wpd策略路径不存在'
         }
+        return res;
     }
 
+    /**
+     * @description: 读策略是否启用
+     * @author: wangcb
+     * @date: 2023/3/8 10:52
+     **/
+    public async wpdReadPolicyEnabled(enable: number) {
+        let res: any = {};
+        const {enablePolicyPath} = await this.checkWpdPolicyPath()
+        if (enablePolicyPath) {
+            console.log(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Read\' -Value ${enable} " `)
+            ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Read\' -Value ${enable} " `)
+            await ps.invoke()
+                .catch(err => {
+                    ElectronLog.error(err);
+                })
+            if (isEqual(enable, 1)) {
+                res['result'] = 'wpd设备读策略已启用'
+            } else {
+                res['result'] = 'wpd设备读策略已禁用'
+            }
+        } else {
+            res['result'] = 'wpd策略路径不存在'
+        }
+        return res;
+    }
 
+    /**
+     * @description: 写策略是否启用
+     * @author: wangcb
+     * @date: 2023/3/8 10:52
+     **/
+    public async wpdWritePolicyEnabled(enable: number) {
+        let res: any = {};
+        const {enablePolicyPath} = await this.checkWpdPolicyPath()
+        if (enablePolicyPath) {
+            ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Write\' -Value ${enable} " `)
+            await ps.invoke()
+                .catch(err => {
+                    ElectronLog.error(err);
+                })
+            if (isEqual(enable, 1)) {
+                res['result'] = 'wpd设备读策略已启用'
+            } else {
+                res['result'] = 'wpd设备读策略已禁用'
+            }
+        } else {
+            res['result'] = 'wpd策略路径不存在'
+        }
+        return res;
+    }
 }

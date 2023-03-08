@@ -14,7 +14,11 @@ export const channels = reactive({
             setup: 'wpd/policy/setup',
             check: "wpd/policy/check",
             create: "wpd/policy/create",
-            setupEnable:'wpd/policy/setupEnable'
+            setupEnable: 'wpd/policy/setupEnable',
+            setDenyRead: 'wpd/policy/setDenyRead',
+            setDenyWrite: 'wpd/policy/setDenyWrite',
+            readPolicyEnabled: 'wpd/policy/readPolicyEnabled',
+            writePolicyEnabled: 'wpd/policy/writePolicyEnabled',
         }
     }
 })
