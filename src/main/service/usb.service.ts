@@ -2,22 +2,19 @@ import {Injectable} from 'einf'
 import ElectronLog from "electron-log";
 import {registryTxtToJson} from "@main/stringUtils";
 import {ps} from "@main/powershell";
-import {Registry} from 'winreg-ts';
-import {USB_STOR_KEY} from "@main/winreg";
 import {isEqual} from "lodash";
 
 @Injectable()
 export class UsbService {
-    private readonly RemovableStorageDevices = 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\RemovableStorageDevices'
+    private readonly USB_STOR = '\'HKLM:\\SYSTEM\\CurrentControlSet\\services\\USBSTOR\''
 
     /**
      * 获取USB移动存储设备状态
      */
     public async getUsbStorageStatus(): Promise<boolean> {
-        ps.addCommand('Get-ItemProperty "HKLM:\\SYSTEM\\CurrentControlSet\\services\\USBSTOR" -name start');
-
         let res;
 
+        ps.addCommand(`Get-ItemProperty ${this.USB_STOR} -name start`);
         await ps.invoke()
             .then(output => {
                 res = isEqual(registryTxtToJson(output).Start, '3');
@@ -31,10 +28,9 @@ export class UsbService {
     public async enableUsb() {
         let res = '启用失败';
 
-        ps.addCommand('Start-Process powershell -ArgumentList "Set-ItemProperty \'HKLM:\\SYSTEM\\CurrentControlSet\\services\\USBSTOR\' -name start -Value 3" -Verb RunAs -WindowStyle Hidden');
+        ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-ItemProperty ${this.USB_STOR} -name start -Value 3" `);
         await ps.invoke()
-            .then((output) => {
-                ElectronLog.info('output', output)
+            .then(() => {
                 res = '启用成功';
             })
             .catch(err => {
@@ -47,10 +43,9 @@ export class UsbService {
     public async disableUsb() {
         let res = '禁用失败';
 
-        ps.addCommand('Start-Process powershell -ArgumentList "Set-ItemProperty \'HKLM:\\SYSTEM\\CurrentControlSet\\services\\USBSTOR\' -name start -Value 4" -Verb RunAs -WindowStyle Hidden');
+        ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "Set-ItemProperty ${this.USB_STOR} -name start -Value 4" `);
         await ps.invoke()
-            .then((output) => {
-                ElectronLog.info('output', output)
+            .then(() => {
                 res = '禁用成功';
             })
             .catch(err => {
