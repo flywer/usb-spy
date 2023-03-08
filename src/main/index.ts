@@ -2,7 +2,6 @@ import {app} from 'electron'
 import {createEinf} from 'einf'
 import {AppController} from './app.controller'
 import {createWindow} from './main.window'
-import {log} from "electron-log";
 import {UsbController} from "@main/controller/usb.controller";
 import {WpdController} from "@main/controller/wpd.controller";
 import {ps} from "@main/powershell";
@@ -12,8 +11,10 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
 async function electronAppInit() {
     const isDev = !app.isPackaged
     app.on('window-all-closed', () => {
-        if (process.platform !== 'darwin')
+        if (process.platform !== 'darwin') {
             app.exit()
+            ps.dispose()
+        }
     })
 
     if (isDev) {

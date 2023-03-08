@@ -222,7 +222,6 @@ export class WpdService {
         let res: any = {};
         const {enablePolicyPath} = await this.checkWpdPolicyPath()
         if (enablePolicyPath) {
-            console.log(`${ADMIN_START} "Set-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Read\' -Value ${enable} " `)
             ps.addCommand(`${ADMIN_START} "Set-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Read\' -Value ${enable} " `)
             await ps.invoke()
                 .then(() => {
