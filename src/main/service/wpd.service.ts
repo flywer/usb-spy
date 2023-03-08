@@ -178,10 +178,12 @@ export class WpdService {
         if (policySetupPath) {
             ps.addCommand(`${ADMIN_START} "Set-ItemProperty -Path ${this.POLICY_SETUP_PATH} -Name \'Deny_Read\' -Value ${denyRead} " `)
             await ps.invoke()
+                .then(() => {
+                    res['result'] = 'wpd设备读策略设置完成'
+                })
                 .catch(err => {
                     ElectronLog.error(err);
                 })
-            res['result'] = 'wpd设备读策略设置完成'
         } else {
             res['result'] = 'wpd策略路径不存在'
         }
@@ -199,10 +201,12 @@ export class WpdService {
         if (policySetupPath) {
             ps.addCommand(`${ADMIN_START} "Set-ItemProperty -Path ${this.POLICY_SETUP_PATH} -Name \'Deny_Write\' -Value ${denyWrite} " `)
             await ps.invoke()
+                .then(() => {
+                    res['result'] = 'wpd设备写策略设置完成'
+                })
                 .catch(err => {
                     ElectronLog.error(err);
                 })
-            res['result'] = 'wpd设备写策略设置完成'
         } else {
             res['result'] = 'wpd策略路径不存在'
         }
@@ -221,14 +225,16 @@ export class WpdService {
             console.log(`${ADMIN_START} "Set-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Read\' -Value ${enable} " `)
             ps.addCommand(`${ADMIN_START} "Set-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Read\' -Value ${enable} " `)
             await ps.invoke()
+                .then(() => {
+                    if (isEqual(enable, 1)) {
+                        res['result'] = 'wpd设备读策略已启用'
+                    } else {
+                        res['result'] = 'wpd设备读策略已禁用'
+                    }
+                })
                 .catch(err => {
                     ElectronLog.error(err);
                 })
-            if (isEqual(enable, 1)) {
-                res['result'] = 'wpd设备读策略已启用'
-            } else {
-                res['result'] = 'wpd设备读策略已禁用'
-            }
         } else {
             res['result'] = 'wpd策略路径不存在'
         }
@@ -246,14 +252,17 @@ export class WpdService {
         if (enablePolicyPath) {
             ps.addCommand(`${ADMIN_START} "Set-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Write\' -Value ${enable} " `)
             await ps.invoke()
+                .then(() => {
+                    if (isEqual(enable, 1)) {
+                        res['result'] = 'wpd设备写策略已启用'
+                    } else {
+                        res['result'] = 'wpd设备写策略已禁用'
+                    }
+                })
                 .catch(err => {
                     ElectronLog.error(err);
                 })
-            if (isEqual(enable, 1)) {
-                res['result'] = 'wpd设备写策略已启用'
-            } else {
-                res['result'] = 'wpd设备写策略已禁用'
-            }
+
         } else {
             res['result'] = 'wpd策略路径不存在'
         }
