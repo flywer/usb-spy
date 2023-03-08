@@ -134,8 +134,8 @@ ipc.on('usb-remove', (msg) => {
     <div style="margin-top: 20px">
       <button style="margin-left: 20px" @click="wpdReadPolicyEnabled(1)">启用WPD设备读策略</button>
       <button style="margin-left: 20px" @click="wpdReadPolicyEnabled(0)">禁用WPD设备读策略</button>
-      <button style="margin-left: 20px" @click="wpdWritePolicyEnabled(1)">启用WPD设备读策略</button>
-      <button style="margin-left: 20px" @click="wpdWritePolicyEnabled(0)">禁用WPD设备读策略</button>
+      <button style="margin-left: 20px" @click="wpdWritePolicyEnabled(1)">启用WPD设备写策略</button>
+      <button style="margin-left: 20px" @click="wpdWritePolicyEnabled(0)">禁用WPD设备写策略</button>
     </div>
   </div>
 </template>

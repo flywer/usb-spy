@@ -109,50 +109,28 @@ export class WpdService {
      **/
     public async wpdPolicySetup() {
         let res: any = {};
-
-        ps.addCommand(`Test-Path ${this.POLICY_PATH}`)
-
-        await ps.invoke()
-            .then(async output => {
-                //若没有此项则新增
-                if (!isEqual(removeLineBreaks(output), 'True')) {
-                    ps.addCommand(`New-Item -Path ${this.POLICY_PATH}`)
-                    await ps.invoke()
-                }
-
-                ps.addCommand(`Test-Path ${this.POLICY_SETUP_PATH}`)
-                await ps.invoke()
-                    .then(async output => {
-                            if (!isEqual(removeLineBreaks(output), 'True')) {
-                                ps.addCommand(`New-Item -Path ${this.POLICY_SETUP_PATH}`)
-                                await ps.invoke()
-                            }
-
-                            //应用层WPD设备禁用以及只读策略
-                            ps.addCommand(`Get-ItemProperty ${this.POLICY_SETUP_PATH}`)
-                            await ps.invoke()
-                                .then(async output => {
-                                    let json = registryTxtToJson(output);
-                                    //若策略项中不存在策略
-                                    if (!('Deny_Read' in json) || !('Deny_Write' in json)) {
-                                        res['status'] = 0
-                                        res['result'] = '未配置WPD设备读写策略'
-                                    } else {
-                                        res['result'] = '已配置WPD设备读写策略\n' + `是否拒绝读取:${json.Deny_Read}\n` + `是否拒绝写入:${json.Deny_Write}\n`
-                                        res['denyRead'] = json.Deny_Read
-                                        res['denyWrite'] = json.Deny_Write
-                                    }
-                                }).catch(err => {
-                                    ElectronLog.error(err);
-                                })
-                        }
-                    )
-                    .catch(err => {
-                        ElectronLog.error(err);
-                    })
-            }).catch(err => {
-                ElectronLog.error(err);
-            })
+        const {policySetupPath} = await this.checkWpdPolicyPath()
+        if (policySetupPath) {
+            //应用层WPD设备禁用以及只读策略
+            ps.addCommand(`Get-ItemProperty ${this.POLICY_SETUP_PATH}`)
+            await ps.invoke()
+                .then(async output => {
+                    let json = registryTxtToJson(output);
+                    //若策略项中不存在策略
+                    if (!('Deny_Read' in json) || !('Deny_Write' in json)) {
+                        res['status'] = 0
+                        res['result'] = '未配置WPD设备读写策略'
+                    } else {
+                        res['result'] = '已配置WPD设备读写策略\n' + `是否拒绝读取:${json.Deny_Read}\n` + `是否拒绝写入:${json.Deny_Write}\n`
+                        res['denyRead'] = json.Deny_Read
+                        res['denyWrite'] = json.Deny_Write
+                    }
+                }).catch(err => {
+                    ElectronLog.error(err);
+                })
+        } else {
+            res['result'] = 'wpd策略路径不存在'
+        }
 
         return res;
     }
@@ -272,9 +250,9 @@ export class WpdService {
                     ElectronLog.error(err);
                 })
             if (isEqual(enable, 1)) {
-                res['result'] = 'wpd设备读策略已启用'
+                res['result'] = 'wpd设备写策略已启用'
             } else {
-                res['result'] = 'wpd设备读策略已禁用'
+                res['result'] = 'wpd设备写策略已禁用'
             }
         } else {
             res['result'] = 'wpd策略路径不存在'
