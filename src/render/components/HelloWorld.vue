@@ -7,7 +7,7 @@ import {
   check_wpd_policy_path,
   create_wpd_policy_path,
   start_wpd_service,
-  stop_wpd_service,
+  stop_wpd_service, wpd_policy_enable,
   wpd_policy_setup
 } from "@render/api/wpd.api";
 
@@ -67,6 +67,10 @@ const createWpdPolicyPath = async () => {
   const {data} = await create_wpd_policy_path()
   log.value += `[main]: ${JSON.stringify(data)}  \n`
 }
+const wpdPolicySetupEnable = async () => {
+  const {data} = await wpd_policy_enable()
+  log.value += `[main]: ${data.result}  \n`
+}
 
 const clear = () => {
   log.value = ''
@@ -113,6 +117,9 @@ ipc.on('usb-remove', (msg) => {
 
       <button style="margin-left: 20px" @click="wpdPolicySetup">获取WPD设备策略状态</button>
 
+      <button style="margin-left: 20px" @click="wpdPolicySetupEnable">获取WPD设备策略启用状态</button>
+    </div>
+    <div style="margin-top: 20px">
       <button style="margin-left: 20px" @click="stopWpdService">禁用WPD服务</button>
 
       <button style="margin-left: 20px" @click="startWpdService">开启WPD服务</button>

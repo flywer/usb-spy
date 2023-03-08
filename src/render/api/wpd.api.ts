@@ -19,3 +19,7 @@ export const check_wpd_policy_path = () => {
 export const create_wpd_policy_path = () => {
     return ipcInstance.send<any>(channels.wpd.policy.create)
 }
+
+export const wpd_policy_enable = () => {
+    return ipcInstance.send<any>(channels.wpd.policy.setupEnable)
+}

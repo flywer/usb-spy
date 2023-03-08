@@ -23,25 +23,40 @@ export class WpdService {
      **/
     public async checkWpdPolicyPath() {
         let policyPath = false
-        let enablePolicyPath = false
-        ps.addCommand(`Test-Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\RemovableStorageDevices\\{6AC27878-A6FA-4155-BA85-F98F491D4F33}' `)
+        let policySetupPath = false //策略路径
+        let enablePolicyPath = false //策略启用设置路径
+
+        ps.addCommand(`Test-Path ${this.POLICY_PATH}`)
         await ps.invoke()
             .then(async output => {
+                //若没有此项则新增
                 policyPath = isEqual(removeLineBreaks(output), 'True');
-            })
-            .catch(err => {
+            }).catch(err => {
                 ElectronLog.error(err);
             })
 
-        ps.addCommand(`Test-Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\RemovableStorageDevices\\{F33FDC04-D1AC-4E8E-9A30-19BBD4B108AE}' `)
-        await ps.invoke()
-            .then(async output => {
-                enablePolicyPath = isEqual(removeLineBreaks(output), 'True');
-            })
-            .catch(err => {
-                ElectronLog.error(err);
-            })
-        return {policyPath, enablePolicyPath};
+        //存在根目录则继续检测
+        if (policyPath) {
+            ps.addCommand(`Test-Path ${this.POLICY_SETUP_PATH} `)
+            await ps.invoke()
+                .then(async output => {
+                    policySetupPath = isEqual(removeLineBreaks(output), 'True');
+                })
+                .catch(err => {
+                    ElectronLog.error(err);
+                })
+
+            ps.addCommand(`Test-Path ${this.ENABLE_POLICY_PATH} `)
+            await ps.invoke()
+                .then(async output => {
+                    enablePolicyPath = isEqual(removeLineBreaks(output), 'True');
+                })
+                .catch(err => {
+                    ElectronLog.error(err);
+                })
+        }
+
+        return {policySetupPath, enablePolicyPath};
     }
 
     /**
@@ -50,6 +65,22 @@ export class WpdService {
      * @date: 2023/3/7 18:04
      **/
     public async createWpdPolicyPath(policyPath: boolean, enablePolicyPath: boolean) {
+
+        //两个路径都没有，可能是原本就没有策略，需要创建根目录
+        if (!policyPath && !enablePolicyPath) {
+            ps.addCommand(`Test-Path ${this.POLICY_PATH}`)
+            await ps.invoke()
+                .then(async output => {
+                    //若没有此项则新增
+                    if (!isEqual(removeLineBreaks(output), 'True')) {
+                        ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "New-Item -ItemType Directory ${this.POLICY_PATH}" `)
+                        await ps.invoke()
+                    }
+                }).catch(err => {
+                    ElectronLog.error(err);
+                })
+        }
+
         if (!policyPath) {
             ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "New-Item -ItemType Directory ${this.POLICY_SETUP_PATH}" `)
             ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "New-ItemProperty -Path ${this.POLICY_SETUP_PATH} -Name \'Deny_Read\' -Value 1 -PropertyType DWORD" `)
@@ -60,10 +91,14 @@ export class WpdService {
             ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "New-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Read\' -Value 0 -PropertyType DWORD" `)
             ps.addCommand(`Start-Process powershell -Verb RunAs -WindowStyle Hidden -ArgumentList "New-ItemProperty -Path ${this.ENABLE_POLICY_PATH} -Name \'Deny_Write\' -Value 0 -PropertyType DWORD" `)
         }
-        await ps.invoke()
-            .catch(err => {
-                ElectronLog.error(err);
-            })
+
+        if (!policyPath || !enablePolicyPath) {
+            await ps.invoke()
+                .catch(err => {
+                    ElectronLog.error(err);
+                })
+        }
+
         return 'WPD设备策略路径创建完毕'
     }
 
@@ -75,7 +110,6 @@ export class WpdService {
     public async wpdPolicySetup() {
         let res: any = {};
 
-        //ps.addCommand('Start-Process powershell -Verb RunAs -WindowStyle Hidden');
         ps.addCommand(`Test-Path ${this.POLICY_PATH}`)
 
         await ps.invoke()
@@ -119,6 +153,38 @@ export class WpdService {
             }).catch(err => {
                 ElectronLog.error(err);
             })
+
+        return res;
+    }
+
+    /**
+     * @description: 检测wpd读写策略设置是否启用
+     * @author: wangcb
+     * @date: 2023/3/8 9:44
+     **/
+    async wpdPolicySetupEnable() {
+        let res: any = {};
+        const {policySetupPath, enablePolicyPath} = await this.checkWpdPolicyPath()
+        if (enablePolicyPath && policySetupPath) {
+            ps.addCommand(`Get-ItemProperty ${this.ENABLE_POLICY_PATH}`)
+            await ps.invoke()
+                .then(async output => {
+                    let json = registryTxtToJson(output);
+                    //若策略项中不存在策略
+                    if (!('Deny_Read' in json) || !('Deny_Write' in json)) {
+                        res['status'] = 0
+                        res['result'] = '未配置WPD设备读写策略启用设置'
+                    } else {
+                        res['result'] = '已配置WPD设备读写策略启用设置\n' + `是否启用拒绝读取策略:${json.Deny_Read}\n` + `是否启用拒绝写入策略:${json.Deny_Write}\n`
+                        res['denyRead'] = json.Deny_Read
+                        res['denyWrite'] = json.Deny_Write
+                    }
+                }).catch(err => {
+                    ElectronLog.error(err);
+                })
+        } else {
+            res['result'] = 'wpd策略路径不存在'
+        }
 
         return res;
     }
@@ -169,4 +235,6 @@ export class WpdService {
             return `出现错误：${err}`
         }
     }
+
+
 }

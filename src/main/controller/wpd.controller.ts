@@ -31,7 +31,12 @@ export class WpdController {
 
     @IpcHandle(channels.wpd.policy.create)
     public async createWpdPolicyPath() {
-        let {policyPath, enablePolicyPath} = await this.wpdService.checkWpdPolicyPath();
-        return await this.wpdService.createWpdPolicyPath(policyPath, enablePolicyPath)
+        let {policySetupPath, enablePolicyPath} = await this.wpdService.checkWpdPolicyPath();
+        return await this.wpdService.createWpdPolicyPath(policySetupPath, enablePolicyPath)
+    }
+
+    @IpcHandle(channels.wpd.policy.setupEnable)
+    public async wpdPolicySetupEnable() {
+        return await this.wpdService.wpdPolicySetupEnable()
     }
 }

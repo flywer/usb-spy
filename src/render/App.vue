@@ -3,7 +3,7 @@ import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
-  <img alt="Vue logo" src="./assets/usb-spy.png" class="logo">
+<!--  <img alt="Vue logo" src="./assets/usb-spy.png" class="logo">-->
   <HelloWorld title="USB-SPY DEMO" />
 </template>
 

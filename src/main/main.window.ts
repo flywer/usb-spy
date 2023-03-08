@@ -7,15 +7,15 @@ const isDev = !app.isPackaged
 
 export async function createWindow() {
     const win = new BrowserWindow({
-        width: 1000,
-        height: 800,
+        width: 850,
+        height: 600,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
             preload: join(__dirname, '../preload/index.js'),
             devTools: isDev,
         },
-        autoHideMenuBar: !isDev,
+        autoHideMenuBar: true,//!isDev
     })
 
     //win.maximize()
