@@ -2,7 +2,7 @@ import {Injectable} from "einf";
 import {ADMIN_START, ps} from "@main/powershell";
 import ElectronLog from "electron-log";
 import {isEqual} from 'lodash'
-import {registryTxtToJson, removeLineBreaks} from "@main/stringUtils";
+import {registryTxtToJson, removeLineBreaks} from "@main/string.utils";
 
 @Injectable()
 export class WpdService {

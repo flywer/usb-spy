@@ -70,4 +70,8 @@ function trim(str: string) {
     return str.replace(reg, '');
 }
 
-
+export const getSerNumByDeviceId = (deviceId: string) => {
+    //'USB\\VID_346D&PID_5678\\3327691123111680644'
+    let deviceInfo = deviceId.split('\\');
+    return deviceInfo[2]
+}

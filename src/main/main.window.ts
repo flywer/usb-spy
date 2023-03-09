@@ -1,7 +1,7 @@
 import {join} from 'path'
 import {BrowserWindow, app} from 'electron'
-import ElectronLog from "electron-log";
 import {ps} from "@main/powershell";
+import {usbDetectInit} from "@main/usb.detect";
 
 const isDev = !app.isPackaged
 
@@ -25,27 +25,12 @@ export async function createWindow() {
         : `file://${join(app.getAppPath(), 'dist/render/index.html')}`
 
     win.loadURL(URL).then(() => {
-        const usbDetect = require('usb-detection');
-
-        usbDetect.startMonitoring();
-
-        const si = require("systeminformation")
-        usbDetect.on('add', function (device) {
-            ElectronLog.info('add', device);
-            win.webContents.send('usb-add', device)
-            si.usb().then(data => ElectronLog.info(data));
-        });
-        usbDetect.on('remove', function (device) {
-            ElectronLog.info('remove', device);
-            win.webContents.send('usb-remove', device)
-            si.usb().then(data => ElectronLog.info(data));
-        });
+        usbDetectInit(win)
     })
 
-    if (isDev)
-        win.webContents.openDevTools()
-
-    else
+    if (isDev) {
+        // win.webContents.openDevTools()
+    } else
         win.removeMenu()
 
     win.on('closed', () => {
@@ -54,10 +39,6 @@ export async function createWindow() {
     })
 
     return win
-}
-
-const spy = () => {
-
 }
 
 export async function restoreOrCreateWindow() {

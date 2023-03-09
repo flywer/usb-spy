@@ -6,6 +6,8 @@ export const channels = reactive({
         status: 'usb/status',
         disable: 'usb/disable',
         enable: 'usb/enable',
+        eject: 'usb/eject',
+        logical: 'usb/logical'
     },
     wpd: {
         stop: 'wpd/stop',

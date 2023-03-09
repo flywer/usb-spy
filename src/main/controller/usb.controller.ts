@@ -1,6 +1,8 @@
-import {Controller, IpcHandle} from "einf";
+import {Controller, IpcHandle, IpcSend} from "einf";
 import {UsbService} from "@main/service/usb.service";
 import {channels} from "@render/api/channels";
+import {ADMIN_START, ps} from "@main/powershell";
+import ElectronLog from "electron-log";
 
 @Controller()
 export class UsbController {
@@ -26,5 +28,16 @@ export class UsbController {
     @IpcHandle(channels.usb.disable)
     public async disableUsb() {
         return await this.deviceControlService.disableUsb()
+    }
+
+    @IpcSend(channels.usb.eject)
+    public async eject(deviceId: string) {
+        return await this.deviceControlService.eject(deviceId)
+    }
+
+    @IpcHandle(channels.usb.logical)
+    public async getLogicalLetter(deviceId: string) {
+        deviceId= 'USB\\VID_346D&PID_5678\\3327691123111680644';
+        return await this.deviceControlService.getLogicalLetter(deviceId)
     }
 }

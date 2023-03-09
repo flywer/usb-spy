@@ -1,6 +1,6 @@
 import {Injectable} from 'einf'
 import ElectronLog from "electron-log";
-import {registryTxtToJson} from "@main/stringUtils";
+import {registryTxtToJson} from "@main/string.utils";
 import {ADMIN_START, ps} from "@main/powershell";
 import {isEqual} from "lodash";
 
@@ -53,5 +53,31 @@ export class UsbService {
             })
 
         return res;
+    }
+
+    async eject(deviceId) {
+        let res: any = {};
+
+        //ps.addCommand(`${ADMIN_START} " pnputil.exe /disable-device ${deviceId}" `)
+        ps.addCommand(`${ADMIN_START} " pnputil.exe /remove-device \'${deviceId}\' " `)
+        await ps.invoke()
+            .then(() => {
+                res['result'] = '设备弹出成功'
+            })
+            .catch(err => {
+                ElectronLog.error(err)
+                res['result'] = '设备弹出失败'
+            })
+
+        return res;
+    }
+
+    /**
+     * @description: 获取设备盘符，即逻辑驱动器名
+     * @author: wangcb
+     * @date: 2023/3/8 16:11
+     **/
+    async getLogicalLetter(deviceId) {
+
     }
 }

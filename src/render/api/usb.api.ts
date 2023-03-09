@@ -12,3 +12,11 @@ export const disable_usb = () => {
 export const enable_usb = () => {
     return ipcInstance.send<string>(channels.usb.enable)
 }
+
+export const eject = (deviceId: string) => {
+    return ipcInstance.send<string>(channels.usb.eject, deviceId)
+}
+
+export const get_logical_letter = (deviceId: string) => {
+    return ipcInstance.send<string>(channels.usb.logical, deviceId)
+}

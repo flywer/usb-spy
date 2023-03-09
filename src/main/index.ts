@@ -1,10 +1,11 @@
 import {app} from 'electron'
 import {createEinf} from 'einf'
-import {AppController} from './app.controller'
+import {AppController} from './controller/app.controller'
 import {createWindow} from './main.window'
 import {UsbController} from "@main/controller/usb.controller";
 import {WpdController} from "@main/controller/wpd.controller";
 import {ps} from "@main/powershell";
+import ElectronLog from "electron-log";
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
 
@@ -48,9 +49,8 @@ async function bootstrap() {
         })
 
     } catch (error) {
-        console.error(error)
+        ElectronLog.error(error)
         app.quit()
-        ps.dispose()
     }
 }
 

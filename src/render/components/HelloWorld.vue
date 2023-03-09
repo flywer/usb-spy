@@ -2,7 +2,7 @@
 import {sendMsgToMainProcess} from '@render/api'
 import {useIpc} from '@render/plugins/ipc'
 import {ref} from 'vue'
-import {disable_usb, enable_usb, get_usb_status} from "@render/api/usb.api";
+import {disable_usb, enable_usb, get_logical_letter, get_usb_status} from "@render/api/usb.api";
 import {
   check_wpd_policy_path,
   create_wpd_policy_path,
@@ -43,6 +43,11 @@ const enableUsb = async () => {
   const {data} = await enable_usb()
   log.value += `[main]: ${data}  \n`
 }
+const getLogicalLetter = async () => {
+  const {data} = await get_logical_letter('')
+  log.value += `[main]: ${data}  \n`
+}
+
 
 const wpdPolicySetup = async () => {
   const {data} = await wpd_policy_setup()
@@ -109,11 +114,14 @@ ipc.on('usb-remove', (msg) => {
     </button>
     <button style="margin-left: 20px" @click="clear">清空</button>
     <div style="margin-top: 20px">
-      <button style="margin-left: 20px" @click="getUsbStatus">获取USB设备状态</button>
+      <button style="margin-left: 20px" @click="getUsbStatus">获取USB移动储存设备状态</button>
 
-      <button style="margin-left: 20px" @click="disableUsb">禁用USB</button>
+      <button style="margin-left: 20px" @click="disableUsb">禁用USB移动储存设备连接</button>
 
-      <button style="margin-left: 20px" @click="enableUsb">启用USB</button>
+      <button style="margin-left: 20px" @click="enableUsb">启用USB移动储存设备连接</button>
+<!--      <button style="margin-left: 20px" @click="getLogicalLetter">获取盘符</button>-->
+
+
     </div>
     <div style="margin-top: 20px">
 
